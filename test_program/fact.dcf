@@ -1,0 +1,25 @@
+// Roll No.: 20172066
+// Binary Search
+
+
+class Program {
+
+	int n;
+
+	int main() 
+	{
+		n=8;
+
+		int i, fact = 1;
+
+		for i=1,i<=n {
+			fact = fact * i;
+			i+=1;
+		}
+
+		Print("Factorial: ", fact);
+
+		return 0;
+	}
+}
+  

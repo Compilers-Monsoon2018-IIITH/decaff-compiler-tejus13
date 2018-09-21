@@ -1,0 +1,28 @@
+
+class Program {
+	
+	void hanoi(int n, char from, char to, char temp) 
+	{ 
+	    if (n == 1) 
+	    { 
+	        printf("\n Move disk 1 from rod %c to rod %c", from, to); 
+	        return; 
+	    }
+	    hanoi(n-1, from, temp, to); 
+	    Print ("Disk no",n);
+	    Print("move from Rod: ",from);
+	    Print("move to rod: ",to);
+	    hanoi(n-1, temp, to, from); 
+	}
+
+	int n;
+	int main() 
+	{
+		n=8;// n represents no of disks
+
+		//Let three rods are represnted as "A", "B", "C"
+
+		hanoi(n,A,B,C);
+		return 0;
+	}
+}

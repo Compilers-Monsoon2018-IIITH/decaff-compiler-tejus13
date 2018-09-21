@@ -1,0 +1,43 @@
+// Roll No.: 20172066
+// Binary Search
+
+
+class Program {
+
+	int arr[10];
+
+	int main() 
+	{
+		arr [0] = 12;
+		arr [1] = 18;
+		arr [2] = 24;
+		arr [3] = 58;
+		arr [4] = 89;
+		arr [5] = 95;
+		arr [6] = 125;
+		arr [7] = 153;
+		arr [8] = 460;
+		arr [9] = 543;
+
+		int l=0;
+		int r=9;
+
+		int x=58;
+	    for l=0, l<=r{ 
+	        int m = l + (r-l)/2;
+
+	        if (arr[m] == x){
+	            Print m;
+	            return 0;
+	        }
+
+	        if (arr[m] < x) 
+	            l = m + 1; 
+	        else
+	            r = m - 1; 
+	    }
+
+	    return -1;
+	}
+} 
+  

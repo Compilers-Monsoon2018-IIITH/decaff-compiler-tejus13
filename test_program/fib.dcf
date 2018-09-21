@@ -1,0 +1,29 @@
+// Roll No.: 20172066
+// Binary Search
+
+
+class Program {
+
+	int n;
+
+	int main() 
+	{
+		n=8;
+		// i have considered first fibonacci as 0 and second as 1
+		int a=0;
+		int b=1;
+		int c=1;
+		
+		for i=0,i<n-2{
+			c=a+b;
+			a=b;
+			b=c;
+			i+=1;
+		}
+
+		Print("fibonacci is:", c);
+
+		return 0;
+	}
+}
+  
