@@ -27,7 +27,7 @@ class Program {
 	        int m = l + (r-l)/2;
 
 	        if (arr[m] == x){
-	            Print m;
+	            callout("printf","element found at index, %d", m);
 	            return 0;
 	        }
 
