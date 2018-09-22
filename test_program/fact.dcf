@@ -16,8 +16,7 @@ class Program {
 			fact = fact * i;
 			i+=1;
 		}
-
-		Print("Factorial: ", fact);
+		callout("printf","factorial is, %d", fact);
 
 		return 0;
 	}
