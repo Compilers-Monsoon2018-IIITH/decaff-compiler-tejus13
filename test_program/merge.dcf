@@ -73,8 +73,9 @@ class Program {
 	
 		mergeSort(arr, 0, n-1);
 		int i;
+		callout("printf","sorted elements are :");
 		for i = 0 , i < n {
-			Print (arr[i]," ");
+			callout("printf","%d ",arr[i]);
 			i+=1;
 		}
 
