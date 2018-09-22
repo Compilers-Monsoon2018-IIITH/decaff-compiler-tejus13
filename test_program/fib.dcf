@@ -20,8 +20,7 @@ class Program {
 			b=c;
 			i+=1;
 		}
-
-		Print("fibonacci is:", c);
+		callout("printf","fibonacci is, %d", c);
 
 		return 0;
 	}
