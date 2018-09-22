@@ -9,9 +9,7 @@ class Program {
 	        return; 
 	    }
 	    hanoi(n-1, from, temp, to); 
-	    Print ("Disk no",n);
-	    Print("move from Rod: ",from);
-	    Print("move to rod: ",to);
+	    callout("printf","disk no %d moved from %d rod to %d rod", n, from, to);
 	    hanoi(n-1, temp, to, from); 
 	}
 
