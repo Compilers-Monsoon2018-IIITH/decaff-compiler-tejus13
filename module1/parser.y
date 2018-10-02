@@ -28,16 +28,67 @@
 %left '*' '/'
 
 %%
-expr : '(' expr ')'
+
+expr : location
+	 | method_call
+	 | literal
+	 | expr bin_op expr
+	 | '-' expr
 	 | '!' expr
-	 |  expr '+' expr
-	 |  expr '-' expr
-	 |  expr '*' expr
-	 |  expr '/' expr
-	 |	
-	 |  ID
-	 | 
+	 | '(' expr ')'
+	 |
 	 ;
+
+location : ID
+		 | ID '[' expr ']'
+		 ;
+
+temp : expr | expr ',' expr
+			;
+method_call :method_name '(' temp ')'
+			// callout
+			;
+
+method_name : ID
+			;
+literal : int_literal
+		| char_literal
+		| bool_literal
+		;
+int_literal : DIGIT
+			| HEX_LITERAL
+			;
+bool_literal : TRUE
+			 | FALSE
+			 ;
+// char_literal :  
+
+bin_op : arith_op
+		| rel_op
+		| eq_op
+		| cond_op
+		;
+
+arith_op : +
+		 | -
+		 | *
+		 | /
+		 | %
+		 ;
+
+rel_op : GT
+		| GTE
+		| LT
+		| LTE
+		;
+
+eq_op : IET
+	  | NET
+	  ;
+
+cond_op : AND
+		| OR
+		;
 
 %%
 main(int argc, char **argv)
