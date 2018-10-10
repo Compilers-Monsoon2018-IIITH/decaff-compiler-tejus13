@@ -48,8 +48,14 @@
 %token SQ_OPEN_BRAC
 %token SQ_CLOSED_BRAC
 %token COMMENTS
-%left '+' '-'
-%left '*' '/'
+%left MULEQUAL MINUSEQUAL PLUSEQUAL
+%left OR
+%left AND 
+%left NET IET
+%left LTE GTE LT GT
+%left PLUS MINUS
+%left MULTIPLY DIVIDE MOD
+
 
 %%
 Program : CLASS PROGRAM LEFT_BRACES field_a RIGHT_BRACES
@@ -58,32 +64,34 @@ Program : CLASS PROGRAM LEFT_BRACES field_a RIGHT_BRACES
 		| CLASS PROGRAM LEFT_BRACES RIGHT_BRACES
 		;
 		
-field_a : field_decl field_a
-		| field_decl
+field_a : field_decl 
+		| field_a field_decl 
 	    ;
 
 field_decl : type field_decl_a SEMI_COLON
 		   ;
 
 field_decl_a : field_decl_b
-	 		 | field_decl_b COMMA field_decl_a 
+	 		 | field_decl_a COMMA field_decl_b 
 			 ;
 
 field_decl_b : ID
 			 | ID SQ_OPEN_BRAC int_literal SQ_CLOSED_BRAC
 			 ;
 
-method_a :method_decl method_a 
-		 : method_decl
+method_a : method_decl  
+		 | method_a method_decl
 		 ;
 	
 method_decl : type ID OPEN_PAREN method_decl_a CLOSED_PAREN block
-			| VOID ID OPEN_PAREN method_decl_a CLOSED_PAREN block
-			| type method_decl_a
+			| type ID OPEN_PAREN CLOSED_PAREN block
+			| VOID ID OPEN_PAREN CLOSED_PAREN block
+			| VOID ID OPEN_PAREN method_decl_a CLOSED_PAREN block 
+			
 			;
 
 method_decl_a : method_decl_b
-			  | method_decl_b COMMA method_decl_a 
+			  | method_decl_a COMMA method_decl_b 
 			  ; 
 
 method_decl_b : type ID			
@@ -95,8 +103,8 @@ block : LEFT_BRACES var_decl_a statement_decl_a RIGHT_BRACES
 	  | LEFT_BRACES RIGHT_BRACES
 	  ;
 
-var_decl_a : var_decl var_decl_a
-		   | var_decl
+var_decl_a : var_decl
+		   | var_decl_a var_decl
 		   ;
 
 var_decl : type id_a SEMI_COLON
@@ -106,8 +114,8 @@ id_a : ID
 	 | id_a COMMA ID
 	 ;
 
-statement_decl_a : statement statement_decl_a
-				 | statement
+statement_decl_a : statement 
+				 | statement_decl_a statement
 				 ;
 
 statement : location assign_op expr
@@ -129,7 +137,19 @@ type : INT
 expr : location
 	 | method_call
 	 | literal
-	 | expr bin_op expr
+	 | expr MULTIPLY expr
+	 | expr DIVIDE expr
+	 | expr PLUS expr
+	 | expr MINUS expr
+	 | expr MOD expr
+	 | expr GTE expr
+	 | expr GT expr
+	 | expr LT expr
+	 | expr LTE expr
+	 | expr IET expr
+	 | expr NET expr
+	 | expr AND expr
+	 | expr OR expr
 	 | MINUS expr
 	 | NOT expr
 	 | OPEN_PAREN expr CLOSED_PAREN
@@ -178,38 +198,10 @@ char_literal : CHAR
 str_literal : STRING
 			;
 
-
-bin_op : arith_op
-		| rel_op
-		| eq_op
-		| cond_op
-		;
-
-arith_op : PLUS
-		 | MINUS
-		 | MULTIPLY
-		 | DIVIDE
-		 | MOD
-		 ;
-
 assign_op : MULEQUAL
 		  | PLUSEQUAL
 		  | MINUSEQUAL
 		  ;
-
-rel_op : GT
-		| GTE
-		| LT
-		| LTE
-		;
-
-eq_op : IET
-	  | NET
-	  ;
-
-cond_op : AND
-		| OR
-		;
 
 %%
 

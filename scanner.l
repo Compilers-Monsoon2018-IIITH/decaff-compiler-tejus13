@@ -18,10 +18,13 @@
 "return"            {return RETURN;}
 "continue"          {return CONTINUE;}
 "break"             {return BREAK;}
+
+[a-zA-Z][a-zA-Z0-9]*	{return ID;}
 \'[A-Za-z]\'        {return CHAR;}
 \"[A-Za-z]*\"       {return STRING;}
-[a-zA-Z]([a-zA-Z]|[0-9])*	{return ID;}
-[ \t\r]				/* comment */
+\/\/.*\n            
+\t
+[ ]				/* comment */
 \n		     		/* comment */
 "(" 				{return OPEN_PAREN;}
 ")" 				{return CLOSED_PAREN;}
@@ -38,7 +41,7 @@
 "%"                 {return MOD;}
 "="                 {return EQUAL;}
 "+="                {return PLUSEQUAL;}
-"*="                {return MULEQUAL;}
+"*="                {return MULEQUAL;} 
 "-="                {return MINUSEQUAL;}
 "&&"                {return AND;}
 "\\"                {return COMMENTS;}
@@ -49,6 +52,7 @@
 "<="                {return GTE;}
 ">="                {return LTE;}
 "=="                {return IET;}
+
 ";"                 {return SEMI_COLON;}
 0x[a-fA-F0-9]+      {return HEX_LITERAL;}
 [0-9][0-9]*         {return DIGIT;}
