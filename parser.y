@@ -1,13 +1,21 @@
 %{
-#include <stdio.h>	
+	#include <stdio.h>	
+	int yylex();
 %}
+using namespace std ;
 
+extern "C" int yylex();
+extern "C" int yyparse();
+extern ASTProgram* AstRoot;
+
+%start Program
 %token CLASS
 %token PROGRAM
-%token ID
-%token VOID
-%token TRUE
-%token FALSE
+%token <str_val> ID
+%token <str_val> VOID
+%token <str_val> TRUE
+%token <str_val> FALSE
+
 %token CALLOUT
 %token INT
 %token BOOL
@@ -17,28 +25,28 @@
 %token RETURN
 %token CONTINUE
 %token BREAK
-%token AND
-%token OR
-%token NOT
-%token NET
-%token GT
-%token LT
-%token GTE
-%token LTE
-%token IET
-%token HEX_LITERAL
-%token DIGIT
-%token CHAR
-%token STRING
-%token PLUS
-%token MINUS
-%token EQUAL
-%token MULTIPLY
-%token DIVIDE
-%token MOD
-%token PLUSEQUAL
-%token MINUSEQUAL
-%token MULEQUAL
+%token <str_val> AND
+%token <str_val> OR
+%token <str_val> NOT
+%token <str_val> NET
+%token <str_val> GT
+%token <str_val> LT
+%token <str_val> GTE
+%token <str_val> LTE
+%token <str_val> IET
+%token <int_val> HEX_LITERAL
+%token <int_val> DIGIT
+%token <str_val> CHAR
+%token <str_val> STRING
+%token <str_val> PLUS
+%token <str_val> MINUS
+%token <str_val> EQUAL
+%token <str_val> MULTIPLY
+%token <str_val> DIVIDE
+%token <str_val> MOD
+%token <str_val> PLUSEQUAL
+%token <str_val> MINUSEQUAL
+%token <str_val> MULEQUAL
 %token OPEN_PAREN
 %token CLOSED_PAREN
 %token LEFT_BRACES
@@ -48,7 +56,9 @@
 %token SQ_OPEN_BRAC
 %token SQ_CLOSED_BRAC
 %token COMMENTS
+
 %left MULEQUAL MINUSEQUAL PLUSEQUAL
+%left NOT
 %left OR
 %left AND 
 %left NET IET
@@ -57,37 +67,52 @@
 %left MULTIPLY DIVIDE MOD
 
 
+%type<str_val> type;
+%type<_program> Program;
+%type<_field_declaration> field_declaration;
+%type<_field_decl> field_decl;
+%type<_field_decl_a_iden> field_decl_a;
+%type<_arrayIdentifier> Array;
+%type<_method_declaration> method_declaration;
+%type<_method_decl> method_decl;
+
+
+
 %%
-Program : CLASS PROGRAM LEFT_BRACES field_a RIGHT_BRACES
-		| CLASS PROGRAM LEFT_BRACES method_a RIGHT_BRACES
-		| CLASS PROGRAM LEFT_BRACES field_a method_a RIGHT_BRACES
-		| CLASS PROGRAM LEFT_BRACES RIGHT_BRACES
+Program : CLASS PROGRAM LEFT_BRACES field_declaration method_declaration RIGHT_BRACES {$$ = new ASTProgram($4,$5); AstRoot=$$;}
+		| CLASS PROGRAM LEFT_BRACES field_declaration RIGHT_BRACES {$$ = new ASTProgram($4,NULL); AstRoot=$$;}
+		| CLASS PROGRAM LEFT_BRACES method_declaration RIGHT_BRACES {$$ = new ASTProgram(NULL,$5); AstRoot=$$;}
+		| CLASS PROGRAM LEFT_BRACES RIGHT_BRACES {$$ = new ASTProgram(NULL,NULL); AstRoot=$$;}
 		;
 		
-field_a : field_decl 
-		| field_a field_decl 
-	    ;
 
-field_decl : type field_decl_a SEMI_COLON
+field_declaration : field_decl {$$ = new vector<FieldDeclaration*>(); $$->push_back($1);}
+				  | field_declaration field_decl {$$=$1 ;$$->push_back($2);}
+				  ;
+
+
+field_decl : type field_decl_a SEMI_COLON {$$ = new FieldDeclaration($1, $2);}
 		   ;
 
-field_decl_a : field_decl_b
-	 		 | field_decl_a COMMA field_decl_b 
-			 ;
 
-field_decl_b : ID
-			 | ID SQ_OPEN_BRAC int_literal SQ_CLOSED_BRAC
-			 ;
+field_decl_a : 	ID {$$ = new vector <Identifier*>(); $$->push_back(new SimpleIdentifier($1));}
+				| ID COMMA field_decl_a { $$ = $3; $$->push_back(new SimpleIdentifier($1));}
+				| Array {$$ = new vector <Identifier*>(); $$->push_back($1);}
+				| Array COMMA field_decl_a {$$ = $3; $$->push_back($1);}
+				;
 
-method_a : method_decl  
-		 | method_a method_decl
+
+Array 	: ID SQ_OPEN_BRAC int_literal SQ_CLOSED_BRAC {$$=new ArrayIdentifier($1,$3);}
+		;
+
+method_declaration : method_decl  {$$-new vector<MethodDeclaration *>(); $$->push_back($1);}
+		 | method_declaration method_decl {$$=$1 ;$$->push_back($2);}
 		 ;
 	
-method_decl : type ID OPEN_PAREN method_decl_a CLOSED_PAREN block
-			| type ID OPEN_PAREN CLOSED_PAREN block
-			| VOID ID OPEN_PAREN CLOSED_PAREN block
-			| VOID ID OPEN_PAREN method_decl_a CLOSED_PAREN block 
-			
+method_decl : type ID OPEN_PAREN method_decl_a CLOSED_PAREN block {$$=new MethodDeclaration($1,$2,$4,$6);}
+			| type ID OPEN_PAREN CLOSED_PAREN block {$$=new MethodDeclaration($1,$2,NULL,$5);}
+			| VOID ID OPEN_PAREN CLOSED_PAREN block {$$=new MethodDeclaration($1,$2,NULL,$5);}
+			| VOID ID OPEN_PAREN method_decl_a CLOSED_PAREN block {$$=new MethodDeclaration($1,$2,$4,$6);}
 			;
 
 method_decl_a : method_decl_b
@@ -154,6 +179,7 @@ expr : location
 	 | NOT expr
 	 | OPEN_PAREN expr CLOSED_PAREN
 	 ;
+
 
 location : ID
 		 | ID SQ_OPEN_BRAC expr SQ_CLOSED_BRAC
