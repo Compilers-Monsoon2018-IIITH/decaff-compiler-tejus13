@@ -1,4 +1,7 @@
 %{
+#define YY_DECL extern "C" int yylex()
+#include "ast.h"
+#include <bits/stdc++.h>
 #include "parser.tab.h"
 %}
 
@@ -19,13 +22,14 @@
 "continue"          {return CONTINUE;}
 "break"             {return BREAK;}
 
-[a-zA-Z][a-zA-Z0-9]*	{return ID;}
-\'[A-Za-z]\'        {return CHAR;}
-\"[A-Za-z]*\"       {return STRING;}
-\/\/.*\n            
-\t
-[ ]				/* comment */
+[a-zA-Z][a-zA-Z0-9]*	{yylval.value = strdup(yytext);return ID;}
+\'[A-Za-z]\'        {yylval.value = strdup(yytext);return CHAR;}
+\"[A-Za-z]*\"       {yylval.value = strdup(yytext);return STRING;}
+\/\/.*\n            /* comment */
+\t                  /* comment */
+[ ]				    /* comment */
 \n		     		/* comment */
+"//".*                {return COMMENTS;}
 "(" 				{return OPEN_PAREN;}
 ")" 				{return CLOSED_PAREN;}
 "{"                 {return LEFT_BRACES;}
@@ -33,29 +37,28 @@
 "["                 {return SQ_OPEN_BRAC;}
 "]"                 {return SQ_CLOSED_BRAC;}
 ","                 {return COMMA;}
-"!"                 {return NOT;}
-"+"                 {return PLUS;}
-"-"                 {return MINUS;}
-"*"                 {return MULTIPLY;}
-"/"                 {return DIVIDE;}
-"%"                 {return MOD;}
-"="                 {return EQUAL;}
-"+="                {return PLUSEQUAL;}
-"*="                {return MULEQUAL;} 
-"-="                {return MINUSEQUAL;}
-"&&"                {return AND;}
-"\\"                {return COMMENTS;}
-"||"                {return OR;}
-"!="                {return NET;}
-"<"                 {return GT;}
-">"                 {return LT;}
-"<="                {return GTE;}
-">="                {return LTE;}
-"=="                {return IET;}
+"!"                 {yylval.value = strdup(yytext);return NOT;}
+"+"                 {yylval.value = strdup(yytext);return PLUS;}
+"-"                 {yylval.value = strdup(yytext);return MINUS;}
+"*"                 {yylval.value = strdup(yytext);return MULTIPLY;}
+"/"                 {yylval.value = strdup(yytext);return DIVIDE;}
+"%"                 {yylval.value = strdup(yytext);return MOD;}
+"="                 {yylval.value = strdup(yytext);return EQUAL;}
+"+="                {yylval.value = strdup(yytext);return PLUSEQUAL;}
+"*="                {yylval.value = strdup(yytext);return MULEQUAL;} 
+"-="                {yylval.value = strdup(yytext);return MINUSEQUAL;}
+"&&"                {yylval.value = strdup(yytext);return AND;}
+
+"||"                {yylval.value = strdup(yytext);return OR;}
+"!="                {yylval.value = strdup(yytext);return NET;}
+"<"                 {yylval.value = strdup(yytext);return GT;}
+">"                 {yylval.value = strdup(yytext);return LT;}
+"<="                {yylval.value = strdup(yytext);return GTE;}
+">="                {yylval.value = strdup(yytext);return LTE;}
+"=="                {yylval.value = strdup(yytext);return IET;}
 
 ";"                 {return SEMI_COLON;}
-0x[a-fA-F0-9]+      {return HEX_LITERAL;}
-[0-9][0-9]*         {return DIGIT;}
-
+0x[a-fA-F0-9]+      {yylval.value = strdup(yytext);return HEX_LITERAL;}
+[0-9][0-9]*         {yylval.value = strdup(yytext);return DIGIT;}
 
 %%
